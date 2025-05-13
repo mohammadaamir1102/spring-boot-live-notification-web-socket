@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Receiver One</title>
+    <script src="/js/stockjs.min.js"></script>
+    <script src="/js/stomp.min.js"></script>
+</head>
+<body>
+<h2>Receiver One</h2>
+<ul id="messages"></ul>
+
+<script>
+    let stompClient;
+
+    function connect() {
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function () {
+            stompClient.subscribe('/topic/messages', function (msg) {
+                const message = JSON.parse(msg.body);
+                const li = document.createElement("li");
+                li.innerText = message.from + ": " + message.content;
+                document.getElementById("messages").appendChild(li);
+            });
+        });
+    }
+
+    connect();
+</script>
+</body>
+</html>

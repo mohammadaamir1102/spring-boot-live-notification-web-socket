@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sender</title>
+<!--    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>-->
+    <script src="/js/stockjs.min.js"></script>
+    <script src="/js/stomp.min.js"></script>
+</head>
+<body>
+<h2>Sender</h2>
+<label>Name:</label>
+<input type="text" id="from"><br>
+<label>Message:</label>
+<input type="text" id="content">
+<button onclick="sendMessage()">Send</button>
+
+<script>
+    let stompClient;
+
+    function connect() {
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function () {
+            console.log('Connected as sender.');
+        });
+    }
+
+    function sendMessage() {
+        const from = document.getElementById('from').value;
+        const content = document.getElementById('content').value;
+        stompClient.send("/app/chat", {}, JSON.stringify({'from': from, 'content': content}));
+        document.getElementById('content').value = '';
+    }
+
+    connect();
+</script>
+</body>
+</html>
